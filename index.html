@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>たし算・ひき算ドリル</title>
+  <style>
+    body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px 0; background-color: #f0f9ff; color: #333; text-align: center; }
+    .container { background-color: #fff; padding: 30px 40px; border-radius: 20px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); width: 90%; max-width: 500px; }
+    h1 { color: #007bff; margin-top: 0; margin-bottom: 10px; }
+    #mode-indicator { font-size: 18px; font-weight: bold; color: #ff9800; height: 25px; margin-bottom: 10px; }
+    #problem { font-size: 48px; font-weight: bold; margin-bottom: 20px; letter-spacing: 0.1em; display: flex; justify-content: center; align-items: center; height: 80px; }
+    #answer { width: 150px; height: 80px; font-size: 48px; text-align: center; border: 2px solid #ccc; border-radius: 10px; margin-right: 10px; -moz-appearance: textfield; }
+    #answer::-webkit-outer-spin-button, #answer::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .buttons { margin-top: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+    button { padding: 12px 25px; font-size: 18px; font-weight: bold; color: #fff; border: none; border-radius: 10px; cursor: pointer; transition: background-color 0.3s, opacity 0.3s; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    #next-button { background-color: #28a745; flex-grow: 2; }
+    #next-button:hover:not(:disabled) { background-color: #218838; }
+    #give-up-button { background-color: #ff9800; }
+    #give-up-button:hover:not(:disabled) { background-color: #e68900; }
+    #show-results { background-color: #17a2b8; }
+    #show-results:hover:not(:disabled) { background-color: #138496; }
+    #review-mode { background-color: #fd7e14; }
+    #review-mode:hover:not(:disabled) { background-color: #c8640f; }
+    #reset-storage { background-color: #6c757d; }
+    #reset-storage:hover:not(:disabled) { background-color: #5a6268; }
+    #result { margin-top: 20px; font-size: 48px; font-weight: bold; height: 60px; }
+    .correct { color: #dc3545; }
+    .incorrect { color: #007bff; }
+
+    /* --- モーダル用のスタイル --- */
+    .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+    .modal-content { background-color: #fefefe; margin: auto; padding: 20px; border: 1px solid #888; border-radius: 15px; width: 90%; max-width: 500px; text-align: left; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 20px; }
+    .modal-header h2 { margin: 0; font-size: 24px; }
+    .modal-close { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
+    .modal-close:hover, .modal-close:focus { color: black; }
+    .modal-body { max-height: 60vh; overflow-y: auto; }
+    .modal-body table { width: 100%; border-collapse: collapse; }
+    .modal-body th, .modal-body td { border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 18px; }
+    .modal-body th { background-color: #f2f2f2; }
+    .modal-footer { text-align: center; margin-top: 20px; }
+    #total-score { font-size: 24px; font-weight: bold; color: #007bff; margin-bottom: 15px; }
+    #restart-session { background-color: #dc3545; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>たし算・ひき算ドリル</h1>
+  <div id="mode-indicator"></div>
+  <div id="problem"></div>
+  <div><input type="number" id="answer" autofocus></div>
+  <div id="result"></div>
+  <div class="buttons">
+    <button id="next-button">つぎへ</button>
+    <button id="give-up-button">わからない</button>
+    <button id="show-results">けっかいちらん</button>
+    <button id="review-mode">ふくしゅう</button>
+    <button id="reset-storage">きろくリセット</button>
+  </div>
+</div>
+
+<!-- 結果一覧モーダル -->
+<div id="results-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header"><h2>こんかいのけっか</h2><span id="modal-close" class="modal-close">&times;</span></div>
+    <div id="results-list" class="modal-body"></div>
+    <div class="modal-footer">
+      <div id="total-score"></div>
+      <button id="restart-session">もういちどやる</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- DOM要素の取得 ---
+  const problemDiv = document.getElementById('problem');
+  const answerInput = document.getElementById('answer');
+  const nextButton = document.getElementById('next-button');
+  const giveUpButton = document.getElementById('give-up-button');
+  const resultDiv = document.getElementById('result');
+  const reviewButton = document.getElementById('review-mode');
+  const resetButton = document.getElementById('reset-storage');
+  const modeIndicator = document.getElementById('mode-indicator');
+  const showResultsButton = document.getElementById('show-results');
+  const resultsModal = document.getElementById('results-modal');
+  const modalCloseButton = document.getElementById('modal-close');
+  const resultsListDiv = document.getElementById('results-list');
+  const totalScoreDiv = document.getElementById('total-score');
+  const restartButton = document.getElementById('restart-session');
+
+  // --- アプリケーションの状態管理 ---
+  const state = { correctAnswer: 0, isReviewMode: false, reviewMistakes: [], currentReviewIndex: 0, sessionHistory: [], isTransitioning: false };
+
+  // --- ローカルストレージ関連（ふくしゅうモード用） ---
+  function getMistakes() { return JSON.parse(localStorage.getItem('drillMistakes') || '[]'); }
+  function saveMistake(problemText, answer) {
+    const mistakes = getMistakes();
+    if (!mistakes.some(m => m.problem === problemText)) {
+      mistakes.push({ problem: problemText, answer: answer });
+      localStorage.setItem('drillMistakes', JSON.stringify(mistakes));
+    }
+    updateButtonsState();
+  }
+  function clearMistakes() {
+    if (confirm('「ふくしゅうモード」に保存された問題をすべて消しますか？')) {
+      localStorage.removeItem('drillMistakes');
+      alert('きろくをけしました。');
+      updateButtonsState();
+    }
+  }
+
+  // --- 問題生成 ---
+  function generateProblem() {
+    let num1 = Math.floor(Math.random() * 20) + 1;
+    let num2 = Math.floor(Math.random() * 20) + 1;
+    const isAddition = Math.random() > 0.5;
+    let problemText = '';
+    if (isAddition) {
+      state.correctAnswer = num1 + num2;
+      problemText = `${num1} + ${num2} =`;
+    } else {
+      if (num1 < num2) { [num1, num2] = [num2, num1]; }
+      state.correctAnswer = num1 - num2;
+      problemText = `${num1} - ${num2} =`;
+    }
+    problemDiv.textContent = problemText;
+  }
+
+  // --- モード管理 ---
+  function startNormalMode() { state.isReviewMode = false; modeIndicator.textContent = ''; nextButton.textContent = 'つぎへ'; generateProblem(); resetUI(); }
+  function startReviewMode() {
+    const mistakes = getMistakes();
+    if (mistakes.length === 0) { alert('ふくしゅうするもんだいがありません。'); return; }
+    state.isReviewMode = true; state.reviewMistakes = mistakes; state.currentReviewIndex = 0;
+    nextButton.textContent = 'つぎのふくしゅうへ';
+    displayReviewProblem();
+    resetUI();
+  }
+  function displayReviewProblem() {
+    const mistake = state.reviewMistakes[state.currentReviewIndex];
+    problemDiv.textContent = mistake.problem;
+    state.correctAnswer = mistake.answer;
+    modeIndicator.textContent = `ふくしゅう (${state.currentReviewIndex + 1}/${state.reviewMistakes.length})`;
+  }
+
+  // --- UI更新 ---
+  function resetUI() { answerInput.value = ''; resultDiv.textContent = ''; resultDiv.className = ''; answerInput.focus(); state.isTransitioning = false; updateButtonsState(); }
+  function updateButtonsState() {
+    const mistakeCount = getMistakes().length;
+    reviewButton.disabled = state.isTransitioning || mistakeCount === 0;
+    showResultsButton.disabled = state.isTransitioning || state.sessionHistory.length === 0;
+    nextButton.disabled = state.isTransitioning;
+    giveUpButton.disabled = state.isTransitioning;
+    resetButton.disabled = state.isTransitioning;
+  }
+  function showResultsList() {
+    if (state.sessionHistory.length === 0) return;
+    let tableHTML = '<table><tr><th>もんだい</th><th>あなたのこたえ</th><th>けっか</th></tr>';
+    state.sessionHistory.forEach(h => {
+      const resultMark = h.isCorrect ? '〇' : '×';
+      const userAnswerDisplay = h.userAnswer === null ? 'わからない' : h.userAnswer;
+      tableHTML += `<tr><td>${h.problem}</td><td>${userAnswerDisplay}</td><td>${resultMark}</td></tr>`;
+    });
+    tableHTML += '</table>';
+    resultsListDiv.innerHTML = tableHTML;
+    const correctCount = state.sessionHistory.filter(h => h.isCorrect).length;
+    totalScoreDiv.textContent = `ごうけいてんすう: ${correctCount * 10}てん`;
+    resultsModal.style.display = 'flex';
+  }
+  function closeModal() { resultsModal.style.display = 'none'; }
+
+  // --- アクション ---
+  function processAnswer(userAnswer, isGiveUp = false) {
+    if (state.isTransitioning) return;
+    state.isTransitioning = true;
+    updateButtonsState();
+
+    const isCorrect = !isGiveUp && userAnswer === state.correctAnswer;
+    state.sessionHistory.push({ problem: problemDiv.textContent, userAnswer: isGiveUp ? null : userAnswer, isCorrect: isCorrect });
+
+    if (isCorrect) {
+      resultDiv.textContent = '〇 せいかい！';
+      resultDiv.className = 'correct';
+    } else {
+      resultDiv.textContent = `× こたえは ${state.correctAnswer}`;
+      resultDiv.className = 'incorrect';
+      if (!state.isReviewMode) { saveMistake(problemDiv.textContent, state.correctAnswer); }
+    }
+
+    setTimeout(() => {
+      if (state.isReviewMode) {
+        state.currentReviewIndex++;
+        if (state.currentReviewIndex >= state.reviewMistakes.length) {
+          alert('ふくしゅうがおわりました！');
+          startNormalMode();
+        } else { displayReviewProblem(); resetUI(); }
+      } else { generateProblem(); resetUI(); }
+    }, 1500);
+  }
+
+  function handleNext() {
+    const userAnswer = parseInt(answerInput.value, 10);
+    if (isNaN(userAnswer)) {
+      resultDiv.textContent = 'すうじをいれてね';
+      resultDiv.className = 'incorrect';
+      return;
+    }
+    processAnswer(userAnswer);
+  }
+
+  function handleGiveUp() {
+    processAnswer(null, true);
+  }
+
+  function restartSession() {
+    if (confirm('はじめからやり直しますか？（こんかいのけっかはリセットされます）')) {
+      state.sessionHistory = [];
+      closeModal();
+      startNormalMode();
+    }
+  }
+
+  // --- イベントリスナーの設定 ---
+  nextButton.addEventListener('click', handleNext);
+  giveUpButton.addEventListener('click', handleGiveUp);
+  reviewButton.addEventListener('click', startReviewMode);
+  resetButton.addEventListener('click', clearMistakes);
+  showResultsButton.addEventListener('click', showResultsList);
+  modalCloseButton.addEventListener('click', closeModal);
+  restartButton.addEventListener('click', restartSession);
+  resultsModal.addEventListener('click', (e) => { if (e.target === resultsModal) { closeModal(); } });
+  answerInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !state.isTransitioning) { handleNext(); } });
+
+  // --- 初期化 ---
+  document.addEventListener('DOMContentLoaded', () => { startNormalMode(); updateButtonsState(); });
+
+</script>
+
+</body>
+</html>
