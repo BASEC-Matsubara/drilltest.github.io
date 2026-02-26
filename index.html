@@ -5,328 +5,594 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>たしざん・ひきざんドリル</title>
   <style>
-    body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px 0; background-color: #f0f9ff; color: #333; text-align: center; }
-    .container { background-color: #fff; padding: 30px 40px; border-radius: 20px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); width: 90%; max-width: 500px; }
-    h1 { color: #007bff; margin-top: 0; margin-bottom: 10px; }
-    .mode-select { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 15px; }
-    .mode-select .mode-btn { padding: 12px 20px; font-size: 16px; font-weight: bold; color: #fff; border: none; border-radius: 10px; cursor: pointer; transition: background-color 0.3s, opacity 0.3s; background-color: #6c757d; }
-    .mode-select .mode-btn:hover { background-color: #5a6268; }
-    .mode-select .mode-btn.selected { background-color: #007bff; }
-    .mode-select .mode-btn.selected:hover { background-color: #0069d9; }
-    #mode-indicator { font-size: 18px; font-weight: bold; color: #ff9800; height: 25px; margin-bottom: 10px; }
-    #timer-display { font-size: 24px; font-weight: bold; color: #17a2b8; margin-bottom: 10px; min-height: 30px; }
-    #problem { font-size: 48px; font-weight: bold; margin-bottom: 20px; letter-spacing: 0.1em; display: flex; justify-content: center; align-items: center; height: 80px; }
-    #answer { width: 150px; height: 80px; font-size: 48px; text-align: center; border: 2px solid #ccc; border-radius: 10px; margin-right: 10px; -moz-appearance: textfield; }
-    #answer::-webkit-outer-spin-button, #answer::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    .buttons { margin-top: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-    button { padding: 12px 25px; font-size: 18px; font-weight: bold; color: #fff; border: none; border-radius: 10px; cursor: pointer; transition: background-color 0.3s, opacity 0.3s; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-    #next-button { background-color: #28a745; flex-grow: 2; }
-    #next-button:hover:not(:disabled) { background-color: #218838; }
-    #give-up-button { background-color: #ff9800; }
-    #give-up-button:hover:not(:disabled) { background-color: #e68900; }
-    #show-results { background-color: #17a2b8; }
-    #show-results:hover:not(:disabled) { background-color: #138496; }
-    #review-mode { background-color: #fd7e14; }
-    #review-mode:hover:not(:disabled) { background-color: #c8640f; }
-    #reset-storage { background-color: #6c757d; }
-    #reset-storage:hover:not(:disabled) { background-color: #5a6268; }
-    #back-to-start { background-color: #6f42c1; }
-    #back-to-start:hover { background-color: #5a32a3; }
-    #result { margin-top: 20px; margin-bottom: 10px; font-size: 36px; font-weight: bold; min-height: 90px; line-height: 1.4; word-break: break-all; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; }
-    .correct { color: #dc3545; }
-    .incorrect { color: #007bff; }
+    body {
+      font-family: 'Hiragino Sans', 'Meiryo', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px 0;
+      background-color: #f0f9ff;
+      color: #333;
+      text-align: center;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 30px 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 500px;
+    }
+
+    h1 {
+      color: #007bff;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .mode-select {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .mode-select .mode-btn {
+      padding: 12px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s, opacity 0.3s;
+      background-color: #6c757d;
+    }
+
+    .mode-select .mode-btn:hover {
+      background-color: #5a6268;
+    }
+
+    .mode-select .mode-btn.selected {
+      background-color: #007bff;
+    }
+
+    .mode-select .mode-btn.selected:hover {
+      background-color: #0069d9;
+    }
+
+    #mode-indicator {
+      font-size: 18px;
+      font-weight: bold;
+      color: #ff9800;
+      height: 25px;
+      margin-bottom: 10px;
+    }
+
+    #timer-display {
+      font-size: 24px;
+      font-weight: bold;
+      color: #17a2b8;
+      margin-bottom: 10px;
+      min-height: 30px;
+    }
+
+    #problem {
+      font-size: 48px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      letter-spacing: 0.1em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 80px;
+    }
+
+    #answer {
+      width: 150px;
+      height: 80px;
+      font-size: 48px;
+      text-align: center;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      margin-right: 10px;
+      -moz-appearance: textfield;
+    }
+
+    #answer::-webkit-outer-spin-button,
+    #answer::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .buttons {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    button {
+      padding: 12px 25px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s, opacity 0.3s;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #next-button {
+      background-color: #28a745;
+      flex-grow: 2;
+    }
+
+    #next-button:hover:not(:disabled) {
+      background-color: #218838;
+    }
+
+    #give-up-button {
+      background-color: #ff9800;
+    }
+
+    #give-up-button:hover:not(:disabled) {
+      background-color: #e68900;
+    }
+
+    #show-results {
+      background-color: #17a2b8;
+    }
+
+    #show-results:hover:not(:disabled) {
+      background-color: #138496;
+    }
+
+    #review-mode {
+      background-color: #fd7e14;
+    }
+
+    #review-mode:hover:not(:disabled) {
+      background-color: #c8640f;
+    }
+
+    #reset-storage {
+      background-color: #6c757d;
+    }
+
+    #reset-storage:hover:not(:disabled) {
+      background-color: #5a6268;
+    }
+
+    #back-to-start {
+      background-color: #6f42c1;
+    }
+
+    #back-to-start:hover {
+      background-color: #5a32a3;
+    }
+
+    #result {
+      margin-top: 20px;
+      margin-bottom: 10px;
+      font-size: 36px;
+      font-weight: bold;
+      min-height: 90px;
+      line-height: 1.4;
+      word-break: break-all;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .correct {
+      color: #dc3545;
+    }
+
+    .incorrect {
+      color: #007bff;
+    }
 
     /* --- モーダル用のスタイル --- */
-    .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
-    .modal-content { background-color: #fefefe; margin: auto; padding: 20px; border: 1px solid #888; border-radius: 15px; width: 90%; max-width: 500px; text-align: left; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 20px; }
-    .modal-header h2 { margin: 0; font-size: 24px; }
-    .modal-close { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
-    .modal-close:hover, .modal-close:focus { color: black; }
-    .modal-body { max-height: 60vh; overflow-y: auto; }
-    .modal-body table { width: 100%; border-collapse: collapse; }
-    .modal-body th, .modal-body td { border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 18px; }
-    .modal-body th { background-color: #f2f2f2; }
-    .modal-footer { text-align: center; margin-top: 20px; }
-    #total-score { font-size: 24px; font-weight: bold; color: #007bff; margin-bottom: 15px; }
-    #restart-session { background-color: #dc3545; }
-    #start-button { background-color: #28a745; font-size: 24px; padding: 16px 40px; }
-    #start-button:hover { background-color: #218838; }
-    #start-review-button { background-color: #fd7e14; font-size: 18px; padding: 12px 25px; }
-    #start-review-button:hover:not(:disabled) { background-color: #c8640f; }
-    #game-area { display: none; }
-    #game-area.visible { display: block; }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 500px;
+      text-align: left;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .modal-close {
+      color: #aaa;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .modal-close:hover,
+    .modal-close:focus {
+      color: black;
+    }
+
+    .modal-body {
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+
+    .modal-body table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .modal-body th,
+    .modal-body td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .modal-body th {
+      background-color: #f2f2f2;
+    }
+
+    .modal-footer {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    #total-score {
+      font-size: 24px;
+      font-weight: bold;
+      color: #007bff;
+      margin-bottom: 15px;
+    }
+
+    #restart-session {
+      background-color: #dc3545;
+    }
+
+    #start-button {
+      background-color: #28a745;
+      font-size: 24px;
+      padding: 16px 40px;
+    }
+
+    #start-button:hover {
+      background-color: #218838;
+    }
+
+    #start-review-button {
+      background-color: #fd7e14;
+      font-size: 18px;
+      padding: 12px 25px;
+    }
+
+    #start-review-button:hover:not(:disabled) {
+      background-color: #c8640f;
+    }
+
+    #game-area {
+      display: none;
+    }
+
+    #game-area.visible {
+      display: block;
+    }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>たしざん・ひきざんドリル</h1>
-  <div id="start-screen">
-    <p style="margin-bottom: 15px; font-size: 18px;">もくてきをえらんでね</p>
-    <div class="mode-select">
-      <button type="button" class="mode-btn" data-mode="addition">たしざんだけ</button>
-      <button type="button" class="mode-btn" data-mode="subtraction">ひきざんだけ</button>
-      <button type="button" class="mode-btn selected" data-mode="both">たしざんとひきざん</button>
+  <div class="container">
+    <h1>たしざん・ひきざんドリル</h1>
+    <div id="start-screen">
+      <p style="margin-bottom: 15px; font-size: 18px;">もくてきをえらんでね</p>
+      <div class="mode-select">
+        <button type="button" class="mode-btn" data-mode="addition">たしざんだけ</button>
+        <button type="button" class="mode-btn" data-mode="subtraction">ひきざんだけ</button>
+        <button type="button" class="mode-btn selected" data-mode="both">たしざんとひきざん</button>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px;">
+        <button type="button" id="start-button">スタート</button>
+        <button type="button" id="start-review-button">ふくしゅう</button>
+      </div>
     </div>
-    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px;">
-      <button type="button" id="start-button">スタート</button>
-      <button type="button" id="start-review-button">ふくしゅう</button>
-    </div>
-  </div>
-  <div id="game-area">
-    <div id="mode-indicator"></div>
-    <div id="timer-display"></div>
-    <div id="problem"></div>
-    <div><input type="number" id="answer" autofocus inputmode="numeric" pattern="[0-9]*"></div>
-    <div id="result"></div>
-    <div class="buttons">
-      <button id="next-button">つぎへ</button>
-      <button id="give-up-button">わからない</button>
-      <button id="show-results">けっかいちらん</button>
-      <button id="review-mode">ふくしゅう</button>
-      <button id="reset-storage">きろくリセット</button>
-      <button id="back-to-start">かいしがめんにもどる</button>
-    </div>
-  </div>
-</div>
-
-<!-- 結果一覧モーダル -->
-<div id="results-modal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header"><h2>こんかいのけっか</h2><span id="modal-close" class="modal-close">&times;</span></div>
-    <div id="results-list" class="modal-body"></div>
-    <div class="modal-footer">
-      <div id="total-score"></div>
-      <button id="restart-session">もういちどやる</button>
+    <div id="game-area">
+      <div id="mode-indicator"></div>
+      <div id="timer-display"></div>
+      <div id="problem"></div>
+      <div><input type="number" id="answer" autofocus inputmode="numeric" pattern="[0-9]*"></div>
+      <div id="result"></div>
+      <div class="buttons">
+        <button id="next-button">つぎへ</button>
+        <button id="give-up-button">わからない</button>
+        <button id="show-results">けっかいちらん</button>
+        <button id="review-mode">ふくしゅう</button>
+        <button id="reset-storage">きろくリセット</button>
+        <button id="back-to-start">かいしがめんにもどる</button>
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-  // --- DOM要素の取得 ---
-  const problemDiv = document.getElementById('problem');
-  const answerInput = document.getElementById('answer');
-  const nextButton = document.getElementById('next-button');
-  const giveUpButton = document.getElementById('give-up-button');
-  const resultDiv = document.getElementById('result');
-  const reviewButton = document.getElementById('review-mode');
-  const resetButton = document.getElementById('reset-storage');
-  const modeIndicator = document.getElementById('mode-indicator');
-  const timerDisplay = document.getElementById('timer-display');
-  const showResultsButton = document.getElementById('show-results');
-  const resultsModal = document.getElementById('results-modal');
-  const modalCloseButton = document.getElementById('modal-close');
-  const resultsListDiv = document.getElementById('results-list');
-  const totalScoreDiv = document.getElementById('total-score');
-  const restartButton = document.getElementById('restart-session');
-  const startScreen = document.getElementById('start-screen');
-  const gameArea = document.getElementById('game-area');
-  const startButton = document.getElementById('start-button');
-  const startReviewButton = document.getElementById('start-review-button');
-  const backToStartButton = document.getElementById('back-to-start');
+  <!-- 結果一覧モーダル -->
+  <div id="results-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>こんかいのけっか</h2><span id="modal-close" class="modal-close">&times;</span>
+      </div>
+      <div id="results-list" class="modal-body"></div>
+      <div class="modal-footer">
+        <div id="total-score"></div>
+        <button id="restart-session">もういちどやる</button>
+      </div>
+    </div>
+  </div>
 
-  // --- アプリケーションの状態管理 ---
-  const ANSWER_TIME_LIMIT = 15;
-  const state = { correctAnswer: 0, isReviewMode: false, reviewMistakes: [], currentReviewIndex: 0, sessionHistory: [], isTransitioning: false, answerTimerId: null, timerCountdownId: null };
+  <script>
+    // --- DOM要素の取得 ---
+    const problemDiv = document.getElementById('problem');
+    const answerInput = document.getElementById('answer');
+    const nextButton = document.getElementById('next-button');
+    const giveUpButton = document.getElementById('give-up-button');
+    const resultDiv = document.getElementById('result');
+    const reviewButton = document.getElementById('review-mode');
+    const resetButton = document.getElementById('reset-storage');
+    const modeIndicator = document.getElementById('mode-indicator');
+    const timerDisplay = document.getElementById('timer-display');
+    const showResultsButton = document.getElementById('show-results');
+    const resultsModal = document.getElementById('results-modal');
+    const modalCloseButton = document.getElementById('modal-close');
+    const resultsListDiv = document.getElementById('results-list');
+    const totalScoreDiv = document.getElementById('total-score');
+    const restartButton = document.getElementById('restart-session');
+    const startScreen = document.getElementById('start-screen');
+    const gameArea = document.getElementById('game-area');
+    const startButton = document.getElementById('start-button');
+    const startReviewButton = document.getElementById('start-review-button');
+    const backToStartButton = document.getElementById('back-to-start');
 
-  // --- ローカルストレージ関連（ふくしゅうモード用） ---
-  function getMistakes() { return JSON.parse(localStorage.getItem('drillMistakes') || '[]'); }
-  function saveMistake(problemText, answer) {
-    const mistakes = getMistakes();
-    if (!mistakes.some(m => m.problem === problemText)) {
-      mistakes.push({ problem: problemText, answer: answer });
-      localStorage.setItem('drillMistakes', JSON.stringify(mistakes));
-    }
-    updateButtonsState();
-  }
-  function clearMistakes() {
-    if (confirm('「ふくしゅうモード」にほぞんされたもんだいをすべてけしますか？')) {
-      localStorage.removeItem('drillMistakes');
-      alert('きろくをけしました。');
+    // --- アプリケーションの状態管理 ---
+    const ANSWER_TIME_LIMIT = 25;
+    const state = { correctAnswer: 0, isReviewMode: false, reviewMistakes: [], currentReviewIndex: 0, sessionHistory: [], isTransitioning: false, answerTimerId: null, timerCountdownId: null };
+
+    // --- ローカルストレージ関連（ふくしゅうモード用） ---
+    function getMistakes() { return JSON.parse(localStorage.getItem('drillMistakes') || '[]'); }
+    function saveMistake(problemText, answer) {
+      const mistakes = getMistakes();
+      if (!mistakes.some(m => m.problem === problemText)) {
+        mistakes.push({ problem: problemText, answer: answer });
+        localStorage.setItem('drillMistakes', JSON.stringify(mistakes));
+      }
       updateButtonsState();
     }
-  }
-
-  // --- 問題生成 ---
-  function getCalcMode() {
-    const btn = document.querySelector('.mode-btn.selected');
-    return btn ? btn.dataset.mode : 'both';
-  }
-  function setCalcMode(mode) {
-    document.querySelectorAll('.mode-btn').forEach(b => { b.classList.toggle('selected', b.dataset.mode === mode); });
-  }
-  function generateProblem() {
-    let num1 = Math.floor(Math.random() * 20) + 1;
-    let num2 = Math.floor(Math.random() * 20) + 1;
-    const mode = getCalcMode();
-    const isAddition = mode === 'addition' ? true : mode === 'subtraction' ? false : Math.random() > 0.5;
-    let problemText = '';
-    if (isAddition) {
-      state.correctAnswer = num1 + num2;
-      problemText = `${num1} + ${num2} =`;
-    } else {
-      if (num1 < num2) { [num1, num2] = [num2, num1]; }
-      state.correctAnswer = num1 - num2;
-      problemText = `${num1} - ${num2} =`;
-    }
-    problemDiv.textContent = problemText;
-  }
-
-  // --- 画面切替 ---
-  function showStartScreen() {
-    stopAnswerTimer();
-    state.isTransitioning = false;
-    state.sessionHistory = [];
-    closeModal();
-    startScreen.style.display = 'block';
-    gameArea.classList.remove('visible');
-    startReviewButton.disabled = getMistakes().length === 0;
-  }
-  function showGameArea() {
-    startScreen.style.display = 'none';
-    gameArea.classList.add('visible');
-  }
-
-  // --- モード管理 ---
-  function startNormalMode() { state.isReviewMode = false; modeIndicator.textContent = ''; nextButton.textContent = 'つぎへ'; showGameArea(); generateProblem(); resetUI(); }
-  function startReviewMode() {
-    const mistakes = getMistakes();
-    if (mistakes.length === 0) { alert('ふくしゅうするもんだいがありません。'); return; }
-    state.isReviewMode = true; state.reviewMistakes = mistakes; state.currentReviewIndex = 0;
-    nextButton.textContent = 'つぎのふくしゅうへ';
-    showGameArea();
-    displayReviewProblem();
-    resetUI();
-  }
-  function displayReviewProblem() {
-    const mistake = state.reviewMistakes[state.currentReviewIndex];
-    problemDiv.textContent = mistake.problem;
-    state.correctAnswer = mistake.answer;
-    modeIndicator.textContent = `ふくしゅう (${state.currentReviewIndex + 1}/${state.reviewMistakes.length})`;
-  }
-
-  // --- タイマー管理 ---
-  function stopAnswerTimer() {
-    if (state.answerTimerId) { clearTimeout(state.answerTimerId); state.answerTimerId = null; }
-    if (state.timerCountdownId) { clearInterval(state.timerCountdownId); state.timerCountdownId = null; }
-    timerDisplay.textContent = '';
-  }
-  function startAnswerTimer() {
-    stopAnswerTimer();
-    let remaining = ANSWER_TIME_LIMIT;
-    timerDisplay.textContent = `のこり ${remaining}びょう`;
-    state.timerCountdownId = setInterval(() => {
-      remaining--;
-      timerDisplay.textContent = remaining > 0 ? `のこり ${remaining}びょう` : '';
-      if (remaining <= 0 && state.timerCountdownId) { clearInterval(state.timerCountdownId); state.timerCountdownId = null; }
-    }, 1000);
-    state.answerTimerId = setTimeout(() => {
-      if (!state.isTransitioning) { processAnswer(null, true, true); }
-    }, ANSWER_TIME_LIMIT * 1000);
-  }
-
-  // --- UI更新 ---
-  function resetUI() { stopAnswerTimer(); answerInput.value = ''; resultDiv.textContent = ''; resultDiv.className = ''; answerInput.focus(); state.isTransitioning = false; updateButtonsState(); startAnswerTimer(); }
-  function updateButtonsState() {
-    const mistakeCount = getMistakes().length;
-    reviewButton.disabled = state.isTransitioning || mistakeCount === 0;
-    showResultsButton.disabled = state.isTransitioning || state.sessionHistory.length === 0;
-    nextButton.disabled = state.isTransitioning;
-    giveUpButton.disabled = state.isTransitioning;
-    resetButton.disabled = state.isTransitioning;
-  }
-  function showResultsList() {
-    if (state.sessionHistory.length === 0) return;
-    let tableHTML = '<table><tr><th>もんだい</th><th>あなたのこたえ</th><th>けっか</th></tr>';
-    state.sessionHistory.forEach(h => {
-      const resultMark = h.isCorrect ? '〇' : '×';
-      const userAnswerDisplay = h.userAnswer === null ? (h.isTimeUp ? 'じかんきれ' : 'わからない') : h.userAnswer;
-      tableHTML += `<tr><td>${h.problem}</td><td>${userAnswerDisplay}</td><td>${resultMark}</td></tr>`;
-    });
-    tableHTML += '</table>';
-    resultsListDiv.innerHTML = tableHTML;
-    const correctCount = state.sessionHistory.filter(h => h.isCorrect).length;
-    totalScoreDiv.textContent = `ごうけいてんすう: ${correctCount * 10}てん`;
-    resultsModal.style.display = 'flex';
-    stopAnswerTimer();
-  }
-  function closeModal() { resultsModal.style.display = 'none'; if (!state.isTransitioning && problemDiv.textContent) { startAnswerTimer(); } }
-
-  // --- アクション ---
-  function processAnswer(userAnswer, isGiveUp = false, isTimeUp = false) {
-    if (state.isTransitioning) return;
-    stopAnswerTimer();
-    state.isTransitioning = true;
-    updateButtonsState();
-
-    const isCorrect = !isGiveUp && !isTimeUp && userAnswer === state.correctAnswer;
-    state.sessionHistory.push({ problem: problemDiv.textContent, userAnswer: (isGiveUp || isTimeUp) ? null : userAnswer, isCorrect: isCorrect, isTimeUp: isTimeUp });
-
-    if (isCorrect) {
-      resultDiv.textContent = '〇 せいかい！';
-      resultDiv.className = 'correct';
-    } else {
-      resultDiv.textContent = isTimeUp ? `じかんきれ！こたえは ${state.correctAnswer}` : `× こたえは ${state.correctAnswer}`;
-      resultDiv.className = 'incorrect';
-      if (!state.isReviewMode) { saveMistake(problemDiv.textContent, state.correctAnswer); }
+    function clearMistakes() {
+      if (confirm('「ふくしゅうモード」にほぞんされたもんだいをすべてけしますか？')) {
+        localStorage.removeItem('drillMistakes');
+        alert('きろくをけしました。');
+        updateButtonsState();
+      }
     }
 
-    setTimeout(() => {
-      if (state.isReviewMode) {
-        state.currentReviewIndex++;
-        if (state.currentReviewIndex >= state.reviewMistakes.length) {
-          alert('ふくしゅうがおわりました！');
-          startNormalMode();
-        } else { displayReviewProblem(); resetUI(); }
-      } else { generateProblem(); resetUI(); }
-    }, 1500);
-  }
-
-  function handleNext() {
-    const userAnswer = parseInt(answerInput.value, 10);
-    if (isNaN(userAnswer)) {
-      resultDiv.textContent = 'すうじをいれてね';
-      resultDiv.className = 'incorrect';
-      return;
+    // --- 問題生成 ---
+    function getCalcMode() {
+      const btn = document.querySelector('.mode-btn.selected');
+      return btn ? btn.dataset.mode : 'both';
     }
-    processAnswer(userAnswer);
-  }
+    function setCalcMode(mode) {
+      document.querySelectorAll('.mode-btn').forEach(b => { b.classList.toggle('selected', b.dataset.mode === mode); });
+    }
+    function generateProblem() {
+      let num1 = Math.floor(Math.random() * 20) + 1;
+      let num2 = Math.floor(Math.random() * 20) + 1;
+      const mode = getCalcMode();
+      const isAddition = mode === 'addition' ? true : mode === 'subtraction' ? false : Math.random() > 0.5;
+      let problemText = '';
+      if (isAddition) {
+        state.correctAnswer = num1 + num2;
+        problemText = `${num1} + ${num2} =`;
+      } else {
+        if (num1 < num2) { [num1, num2] = [num2, num1]; }
+        state.correctAnswer = num1 - num2;
+        problemText = `${num1} - ${num2} =`;
+      }
+      problemDiv.textContent = problemText;
+    }
 
-  function handleGiveUp() {
-    processAnswer(null, true);
-  }
-
-  function restartSession() {
-    if (confirm('はじめからやりなおしますか？（こんかいのけっかはリセットされます）')) {
+    // --- 画面切替 ---
+    function showStartScreen() {
+      stopAnswerTimer();
+      state.isTransitioning = false;
       state.sessionHistory = [];
       closeModal();
-      showStartScreen();
+      startScreen.style.display = 'block';
+      gameArea.classList.remove('visible');
+      startReviewButton.disabled = getMistakes().length === 0;
     }
-  }
+    function showGameArea() {
+      startScreen.style.display = 'none';
+      gameArea.classList.add('visible');
+    }
 
-  // --- イベントリスナーの設定 ---
-  document.querySelectorAll('.mode-btn').forEach(btn => {
-    btn.addEventListener('click', () => { setCalcMode(btn.dataset.mode); });
-  });
-  startButton.addEventListener('click', () => { startNormalMode(); updateButtonsState(); });
-  startReviewButton.addEventListener('click', () => { startReviewMode(); updateButtonsState(); });
-  backToStartButton.addEventListener('click', () => { showStartScreen(); });
-  nextButton.addEventListener('click', handleNext);
-  giveUpButton.addEventListener('click', handleGiveUp);
-  reviewButton.addEventListener('click', startReviewMode);
-  resetButton.addEventListener('click', clearMistakes);
-  showResultsButton.addEventListener('click', showResultsList);
-  modalCloseButton.addEventListener('click', closeModal);
-  restartButton.addEventListener('click', restartSession);
-  resultsModal.addEventListener('click', (e) => { if (e.target === resultsModal) { closeModal(); } });
-  answerInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !state.isTransitioning) { handleNext(); } });
+    // --- モード管理 ---
+    function startNormalMode() { state.isReviewMode = false; modeIndicator.textContent = ''; nextButton.textContent = 'つぎへ'; showGameArea(); generateProblem(); resetUI(); }
+    function startReviewMode() {
+      const mistakes = getMistakes();
+      if (mistakes.length === 0) { alert('ふくしゅうするもんだいがありません。'); return; }
+      state.isReviewMode = true; state.reviewMistakes = mistakes; state.currentReviewIndex = 0;
+      nextButton.textContent = 'つぎのふくしゅうへ';
+      showGameArea();
+      displayReviewProblem();
+      resetUI();
+    }
+    function displayReviewProblem() {
+      const mistake = state.reviewMistakes[state.currentReviewIndex];
+      problemDiv.textContent = mistake.problem;
+      state.correctAnswer = mistake.answer;
+      modeIndicator.textContent = `ふくしゅう (${state.currentReviewIndex + 1}/${state.reviewMistakes.length})`;
+    }
 
-  // --- 初期化 ---
-  document.addEventListener('DOMContentLoaded', () => { showStartScreen(); });
+    // --- タイマー管理 ---
+    function stopAnswerTimer() {
+      if (state.answerTimerId) { clearTimeout(state.answerTimerId); state.answerTimerId = null; }
+      if (state.timerCountdownId) { clearInterval(state.timerCountdownId); state.timerCountdownId = null; }
+      timerDisplay.textContent = '';
+    }
+    function startAnswerTimer() {
+      stopAnswerTimer();
+      let remaining = ANSWER_TIME_LIMIT;
+      timerDisplay.textContent = `のこり ${remaining}びょう`;
+      state.timerCountdownId = setInterval(() => {
+        remaining--;
+        timerDisplay.textContent = remaining > 0 ? `のこり ${remaining}びょう` : '';
+        if (remaining <= 0 && state.timerCountdownId) { clearInterval(state.timerCountdownId); state.timerCountdownId = null; }
+      }, 1000);
+      state.answerTimerId = setTimeout(() => {
+        if (!state.isTransitioning) { processAnswer(null, true, true); }
+      }, ANSWER_TIME_LIMIT * 1000);
+    }
 
-</script>
+    // --- UI更新 ---
+    function resetUI() { stopAnswerTimer(); answerInput.value = ''; resultDiv.textContent = ''; resultDiv.className = ''; answerInput.focus(); state.isTransitioning = false; updateButtonsState(); startAnswerTimer(); }
+    function updateButtonsState() {
+      const mistakeCount = getMistakes().length;
+      reviewButton.disabled = state.isTransitioning || mistakeCount === 0;
+      showResultsButton.disabled = state.isTransitioning || state.sessionHistory.length === 0;
+      nextButton.disabled = state.isTransitioning;
+      giveUpButton.disabled = state.isTransitioning;
+      resetButton.disabled = state.isTransitioning;
+    }
+    function showResultsList() {
+      if (state.sessionHistory.length === 0) return;
+      let tableHTML = '<table><tr><th>もんだい</th><th>あなたのこたえ</th><th>けっか</th></tr>';
+      state.sessionHistory.forEach(h => {
+        const resultMark = h.isCorrect ? '〇' : '×';
+        const userAnswerDisplay = h.userAnswer === null ? (h.isTimeUp ? 'じかんきれ' : 'わからない') : h.userAnswer;
+        tableHTML += `<tr><td>${h.problem}</td><td>${userAnswerDisplay}</td><td>${resultMark}</td></tr>`;
+      });
+      tableHTML += '</table>';
+      resultsListDiv.innerHTML = tableHTML;
+      const correctCount = state.sessionHistory.filter(h => h.isCorrect).length;
+      totalScoreDiv.textContent = `ごうけいてんすう: ${correctCount * 10}てん`;
+      resultsModal.style.display = 'flex';
+      stopAnswerTimer();
+    }
+    function closeModal() { resultsModal.style.display = 'none'; if (!state.isTransitioning && problemDiv.textContent) { startAnswerTimer(); } }
+
+    // --- アクション ---
+    function processAnswer(userAnswer, isGiveUp = false, isTimeUp = false) {
+      if (state.isTransitioning) return;
+      stopAnswerTimer();
+      state.isTransitioning = true;
+      updateButtonsState();
+
+      const isCorrect = !isGiveUp && !isTimeUp && userAnswer === state.correctAnswer;
+      state.sessionHistory.push({ problem: problemDiv.textContent, userAnswer: (isGiveUp || isTimeUp) ? null : userAnswer, isCorrect: isCorrect, isTimeUp: isTimeUp });
+
+      if (isCorrect) {
+        resultDiv.textContent = '〇 せいかい！';
+        resultDiv.className = 'correct';
+      } else {
+        resultDiv.textContent = isTimeUp ? `じかんきれ！こたえは ${state.correctAnswer}` : `× こたえは ${state.correctAnswer}`;
+        resultDiv.className = 'incorrect';
+        if (!state.isReviewMode) { saveMistake(problemDiv.textContent, state.correctAnswer); }
+      }
+
+      setTimeout(() => {
+        if (state.isReviewMode) {
+          state.currentReviewIndex++;
+          if (state.currentReviewIndex >= state.reviewMistakes.length) {
+            alert('ふくしゅうがおわりました！');
+            startNormalMode();
+          } else { displayReviewProblem(); resetUI(); }
+        } else { generateProblem(); resetUI(); }
+      }, 1500);
+    }
+
+    function handleNext() {
+      const userAnswer = parseInt(answerInput.value, 10);
+      if (isNaN(userAnswer)) {
+        resultDiv.textContent = 'すうじをいれてね';
+        resultDiv.className = 'incorrect';
+        return;
+      }
+      processAnswer(userAnswer);
+    }
+
+    function handleGiveUp() {
+      processAnswer(null, true);
+    }
+
+    function restartSession() {
+      if (confirm('はじめからやりなおしますか？（こんかいのけっかはリセットされます）')) {
+        state.sessionHistory = [];
+        closeModal();
+        showStartScreen();
+      }
+    }
+
+    // --- イベントリスナーの設定 ---
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => { setCalcMode(btn.dataset.mode); });
+    });
+    startButton.addEventListener('click', () => { startNormalMode(); updateButtonsState(); });
+    startReviewButton.addEventListener('click', () => { startReviewMode(); updateButtonsState(); });
+    backToStartButton.addEventListener('click', () => { showStartScreen(); });
+    nextButton.addEventListener('click', handleNext);
+    giveUpButton.addEventListener('click', handleGiveUp);
+    reviewButton.addEventListener('click', startReviewMode);
+    resetButton.addEventListener('click', clearMistakes);
+    showResultsButton.addEventListener('click', showResultsList);
+    modalCloseButton.addEventListener('click', closeModal);
+    restartButton.addEventListener('click', restartSession);
+    resultsModal.addEventListener('click', (e) => { if (e.target === resultsModal) { closeModal(); } });
+    answerInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !state.isTransitioning) { handleNext(); } });
+
+    // --- 初期化 ---
+    document.addEventListener('DOMContentLoaded', () => { showStartScreen(); });
+
+  </script>
 
 </body>
 </html>
